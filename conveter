@@ -1,0 +1,194 @@
+from tkinter import *
+from tkinter import messagebox, ttk
+
+# Initialize the main window
+window = Tk()
+window.title("Conversion Calculator")
+window.resizable(width=False, height=False)
+window.geometry("500x600")
+window.configure(bg="#e6f7ff")  # Light blue background for a refreshing look
+
+# Heading for the application
+
+heading_label = Label(window, text="Number Base Converter", font=("Arial", 28, "bold"), bg="#e6f7ff", fg="#003366")
+heading_label.grid(row=0, column=0, columnspan=2, pady=20)
+
+# Input field and label
+label_1 = Label(window, text="Enter value:", font=("Arial", 12, "bold"), bg="#e6f7ff", fg="#003366")
+label_1.grid(row=1, column=0, padx=10, pady=10, sticky=W)
+
+entry = Entry(window, bd=2, font=("Arial", 12), width=35, highlightbackground="#80d4ff", highlightthickness=1)
+entry.grid(row=1, column=1, padx=10, pady=10, sticky=W)
+
+# Reset function
+def reset():
+    entry.delete(0, END)
+    label_answer.config(text="", bg="#e6f7ff", relief=FLAT, bd=0)
+
+# Conversion functions
+def bin_to_dec(b):
+    return int(str(b), 2)
+
+def bin_to_oct(b):
+    return oct(int(str(b), 2))[2:]
+
+def bin_to_hex(b):
+    return hex(int(str(b), 2))[2:].upper()
+
+def dec_to_bin(d):
+    return bin(int(d))[2:]
+
+def dec_to_oct(d):
+    return oct(int(d))[2:]
+
+def dec_to_hex(d):
+    return hex(int(d))[2:].upper()
+
+def oct_to_bin(o):
+    return bin(int(str(o), 8))[2:]
+
+def oct_to_dec(o):
+    return int(str(o), 8)
+
+def oct_to_hex(o):
+    return hex(int(str(o), 8))[2:].upper()
+
+def hex_to_bin(h):
+    return bin(int(str(h), 16))[2:]
+
+def hex_to_dec(h):
+    return int(str(h), 16)
+
+def hex_to_oct(h):
+    return oct(int(str(h), 16))[2:]
+
+# Validation functions for input format
+def is_valid_binary(b):
+    return all(bit in "01" for bit in b)
+
+def is_valid_decimal(d):
+    return d.isdigit()
+
+def is_valid_octal(o):
+    return all(bit in "01234567" for bit in o)
+
+def is_valid_hexadecimal(h):
+    return all(bit in "0123456789ABCDEF" for bit in h.upper())
+
+# Conversion logic with validation
+def convert():
+    value = entry.get().strip()
+    
+    if value == "":
+        messagebox.showinfo("Error", "Please enter a value.")
+        return
+    
+    try:
+        # Check if the input value matches the selected base
+        if var_a.get() == "Binary" and not is_valid_binary(value):
+            messagebox.showinfo("Error", "Invalid binary input. Please enter only 0's and 1's.")
+            return
+        elif var_a.get() == "Decimal" and not is_valid_decimal(value):
+            messagebox.showinfo("Error", "Invalid decimal input. Please enter a valid number.")
+            return
+        elif var_a.get() == "Octal" and not is_valid_octal(value):
+            messagebox.showinfo("Error", "Invalid octal input. Please enter only digits from 0 to 7.")
+            return
+        elif var_a.get() == "Hexadecimal" and not is_valid_hexadecimal(value):
+            messagebox.showinfo("Error", "Invalid hexadecimal input. Please enter valid hexadecimal characters.")
+            return
+
+        results = []
+
+        if var_a.get() == "Binary":
+            if checkbox_decimal_var.get():
+                results.append(f"Decimal: {bin_to_dec(value)}")
+            if checkbox_octal_var.get():
+                results.append(f"Octal: {bin_to_oct(value)}")
+            if checkbox_hex_var.get():
+                results.append(f"Hexadecimal: {bin_to_hex(value)}")
+
+        elif var_a.get() == "Decimal":
+            if checkbox_binary_var.get():
+                results.append(f"Binary: {dec_to_bin(value)}")
+            if checkbox_octal_var.get():
+                results.append(f"Octal: {dec_to_oct(value)}")
+            if checkbox_hex_var.get():
+                results.append(f"Hexadecimal: {dec_to_hex(value)}")
+
+        elif var_a.get() == "Octal":
+            if checkbox_binary_var.get():
+                results.append(f"Binary: {oct_to_bin(value)}")
+            if checkbox_decimal_var.get():
+                results.append(f"Decimal: {oct_to_dec(value)}")
+            if checkbox_hex_var.get():
+                results.append(f"Hexadecimal: {oct_to_hex(value)}")
+
+        elif var_a.get() == "Hexadecimal":
+            if checkbox_binary_var.get():
+                results.append(f"Binary: {hex_to_bin(value)}")
+            if checkbox_decimal_var.get():
+                results.append(f"Decimal: {hex_to_dec(value)}")
+            if checkbox_octal_var.get():
+                results.append(f"Octal: {hex_to_oct(value)}")
+
+        # Display results in a styled format
+        label_answer.config(
+            text="\n\n".join(results), 
+            justify=CENTER, 
+            fg="#003366", 
+            bg="#f0faff", 
+            relief=GROOVE, 
+            bd=2, 
+            padx=20, 
+            pady=20, 
+            font=("Arial", 14, "bold")
+        )
+
+    except ValueError:
+        messagebox.showinfo("Error", "Invalid input. Please check the value and try again.")
+
+# Dropdown for "From Base"
+label_from = Label(window, text="From Base:", font=("Arial", 12, "bold"), bg="#e6f7ff", fg="#003366")
+label_from.grid(row=2, column=0, padx=10, pady=10, sticky=W)
+
+var_a = StringVar()
+var_a.set("Select Base")
+
+from_dropdown = ttk.Combobox(window, textvariable=var_a, values=["Binary", "Decimal", "Octal", "Hexadecimal"], font=("Arial", 10), state="readonly")
+from_dropdown.grid(row=2, column=1, padx=10, pady=10, sticky=W)
+
+# Checkboxes for "To Base"
+label_to = Label(window, text="To Base:", font=("Arial", 12, "bold"), bg="#e6f7ff", fg="#003366")
+label_to.grid(row=3, column=0, padx=10, pady=10, sticky=W)
+
+checkbox_binary_var = BooleanVar()
+checkbox_decimal_var = BooleanVar()
+checkbox_octal_var = BooleanVar()
+checkbox_hex_var = BooleanVar()
+
+checkbox_binary = Checkbutton(window, text="Binary", variable=checkbox_binary_var, font=("Arial", 10), bg="#e6f7ff", activebackground="#cceeff", fg="#003366")
+checkbox_binary.grid(row=4, column=1, sticky=W, padx=10)
+
+checkbox_decimal = Checkbutton(window, text="Decimal", variable=checkbox_decimal_var, font=("Arial", 10), bg="#e6f7ff", activebackground="#cceeff", fg="#003366")
+checkbox_decimal.grid(row=5, column=1, sticky=W, padx=10)
+
+checkbox_octal = Checkbutton(window, text="Octal", variable=checkbox_octal_var, font=("Arial", 10), bg="#e6f7ff", activebackground="#cceeff", fg="#003366")
+checkbox_octal.grid(row=6, column=1, sticky=W, padx=10)
+
+checkbox_hex = Checkbutton(window, text="Hexadecimal", variable=checkbox_hex_var, font=("Arial", 10), bg="#e6f7ff", activebackground="#cceeff", fg="#003366")
+checkbox_hex.grid(row=7, column=1, sticky=W, padx=10)
+
+# Convert and Reset buttons
+button_convert = Button(window, text="Convert", font=("Arial", 12, "bold"), bg="#0078D7", fg="white", activebackground="#005bb5", command=convert)
+button_convert.grid(row=8, column=0, pady=20, padx=10, sticky=W)
+
+button_reset = Button(window, text="Reset", font=("Arial", 12, "bold"), bg="#D70000", fg="white", activebackground="#b30000", command=reset)
+button_reset.grid(row=8, column=1, pady=20, padx=10, sticky=E)
+
+# Result display
+label_answer = Label(window, text="", font=("Arial", 14), bg="#e6f7ff", fg="#006400", justify=CENTER)
+label_answer.grid(row=9, column=0, columnspan=2, pady=20)
+
+# Run the main loop
+window.mainloop()
